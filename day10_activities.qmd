@@ -1,0 +1,45 @@
+---
+title: "Day 10 Tasks"
+format: html
+editor: visual
+---
+
+```{r}
+
+library(tidyverse)
+library(here)
+
+```
+
+### Reading in the files
+
+```{r}
+
+daily_meteor <- read_csv(here("data", "ntl20_v6.csv"))
+ice_cover <- read_csv(here("data", "ntl33_v7.csv"), na = c("-999", "")) 
+```
+
+## Creating visualizations
+
+```{r}
+
+ice_sums <- ice_cover |> 
+  group_by(lakeid, season, year4) |> 
+  summarize(mean = mean(ice_duration, na.rm = TRUE), median = median(ice_duration, na.rm = TRUE)) |> 
+  filter(year4 > 1999)
+
+ggplot(ice_cover, aes(x = lakeid, y = ice_duration)) +
+  geom_jitter(width = 0.4) +
+  geom_boxplot(fill = NA, width = 0.5) +
+  theme_minimal() + 
+  labs(x = "Ice Duration", y = " Lake")
+
+madison_year_mean <- ice_cover |> 
+  group_by(year4) |> 
+  summarize(mean = mean(ice_duration, na.rm = TRUE))
+
+ggplot(madison_year_mean, aes(x = year4, y = mean)) +
+  geom_line() +
+  labs(caption = "There seems to be cyclical trends for the mean ice duration throughout the years.")
+
+```
